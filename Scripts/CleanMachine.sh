@@ -16,18 +16,26 @@ print_red() {
 }
 
 # Prompt the user
-read -p "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. Are you >
+read -p "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. 
+are you sure you would like to continue" response 
 # Check the response
 if [[ $response =~ ^[Yy]$ ]]; then
-    # Run the clean up
-    sudo apt remove awscli
-    print_green "-----------AWS CLI removed----------"
-
+    # Run the clean up for AWS and github Creds
     rm ~/.aws/credentials
     print_green "----------AWS creds removed----------"
 
     rm ~/.git-credentials
     print_green "----------GitHub creds removed----------"
+
+    # Double check its okay to remove chrome data
+    read -p "Remove chrome logins, history and cookies?" response2
+    if [[ $response2 =~ ^[Yy]$ ]]; then
+        rm -rf ~/.cache/google-chrome/*
+        rm -f ~/.config/google-chrome/Default/*
+        print_green "----------Chrome data Cleared----------"
+    else 
+         print_red "----------Chrome Skipped----------"
+    fi
 
     print_green "----------Clearing Bash History----------"
     history -c
@@ -36,7 +44,9 @@ if [[ $response =~ ^[Yy]$ ]]; then
 
     sudo apt clean
     sudo apt autoremove
-    print_green "----------Cleaned system cache and performed apt autoremove----------"
+    print_green "----------Cleaning Complete----------"
+
+    # Kill the script if no is selected
 elif [[ $response =~ ^[Nn]$ ]]; then
     print_red "----------Program Terminated----------"
     exit 1
