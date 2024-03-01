@@ -42,7 +42,7 @@ clean_aws(){
         rm ~/.aws/credentials
         print_green "----------AWS creds removed----------"
        else 
-         print_red "----------CAWS Skipped----------"
+         print_red "----------AWS Skipped----------"
     fi
 }
 
@@ -101,6 +101,7 @@ clean_ssh(){
 }
 
 # Prompt for script to run
+print_yellow "----------Delievery NUC Cleaner----------"
 if confirm "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. 
 are you sure you would like to continue (Y/N) " ; then
     # Run the clean up the process print the current step
@@ -116,7 +117,7 @@ are you sure you would like to continue (Y/N) " ; then
     clean_history
     print_yellow "Step 6/6"
     clean_ssh
-    print_green "----------Cleaning Compelte----------"
+    print_yellow "----------Cleaning Complete----------"
 
     # Kill the script if no is selected
 else    print_red "----------Program Terminated----------" exit 1
