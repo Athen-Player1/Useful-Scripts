@@ -21,11 +21,11 @@ confirm() {
 	case "$response" in
 		[yY][eE][sS]|[yY])
 			echo "y"
-			return 1
+			return 0
 			;;
 		*)
 			echo "n"
-			return 0
+			return 1
 			;;
 	esac
 }
