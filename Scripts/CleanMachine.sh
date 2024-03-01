@@ -4,6 +4,7 @@
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 RESET='\033[0m'
+YELLOW='\033[1;33m'
 
 # Print green text function
 print_green() {
@@ -13,6 +14,11 @@ print_green() {
 # Print red text function
 print_red() {
     echo -e "${RED}$1${RESET}"
+}
+
+# Print yellow text function
+print_yellow() {
+    echo -e "${YELLOW}$1${RESET}"
 }
 
 confirm() {
@@ -31,13 +37,19 @@ confirm() {
 }
 
 clean_aws(){
- rm ~/.aws/credentials
-    print_green "----------AWS creds removed----------"
+    # Double check its okay to remove AWS creds
+    if confirm "Remove AWS Creds (Y/N) "; then
+        rm ~/.aws/credentials
+        print_green "----------AWS creds removed----------"
+       else 
+         print_red "----------CAWS Skipped----------"
+    fi
 }
 
 clean_chrome(){
-     # Double check its okay to remove contents of downloads
-    if confirm "Remove chrome logins, history and cookies"; then
+     # Double check its okay to remove contents of chrome
+    if confirm "Remove chrome logins, history and cookies, this will kill the chrome process (Y/N) "; then
+        kill $(pgrep chrome)
         rm -rf ~/.cache/google-chrome/*
         rm -f ~/.config/google-chrome/Default/*
         print_green "----------Chrome data Cleared----------"
@@ -47,9 +59,8 @@ clean_chrome(){
 }
 
 clean_downloads(){
-     # Double check its okay to remove contents of downloads
-    
-    if confirm "Remove contents of downloads folder (Y/N)" ; then
+     # Double check its okay to remove contents of downloads  
+    if confirm "Remove contents of downloads folder (Y/N) " ; then
         rm -r ~/Downloads/*
         print_green "----------Downloads Cleared----------"
     else 
@@ -58,16 +69,25 @@ clean_downloads(){
 }
 
 clean_history(){
-    history -c
-    history -w
-    print_green "----------Bash History Cleared----------"
-
+    # Double check its okay to remove bash history
+    if confirm "Clear Bash History (Y/N) "; then
+        history -c
+        history -w
+        print_green "----------Bash History Cleared----------"
+    else 
+         print_red "----------Bash History Skipped----------"
+    fi
 }
 
 clean_git(){
-    sudo apt clean
-    sudo apt autoremove
-    print_green "----------Cleaning Complete----------"
+    # Double check its okay to remove all git creds
+    if confirm "Clear GitHub creds (Y/N) "; then
+        sudo apt clean
+        sudo apt autoremove
+        print_green "----------Git creds cleared----------"
+    else 
+         print_red "----------Git Creds Skipped----------"
+    fi
 }
 
 clean_ssh(){
@@ -80,17 +100,21 @@ clean_ssh(){
     fi
 }
 
-
 # Prompt for script to run
 if confirm "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. 
 are you sure you would like to continue (Y/N) " ; then
-    # Run the clean up for AWS and github Creds
-   
+    # Run the clean up the process print the current step
+    print_yellow "Step 1/6"
     clean_aws
+    print_yellow "Step 2/6"
     clean_git
+    print_yellow "Step 3/6"
     clean_chrome
+    print_yellow "Step 4/6"
     clean_downloads
+    print_yellow "Step 5/6"
     clean_history
+    print_yellow "Step 6/6"
     clean_ssh
     print_green "----------Cleaning Compelte----------"
 
