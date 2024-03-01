@@ -15,15 +15,29 @@ print_red() {
     echo -e "${RED}$1${RESET}"
 }
 
-cleanAWS(){
+confirm() {
+	# call with a prompt string or use a default
+	read -r -p "${1:-[y/N]} " response
+	case "$response" in
+		[yY][eE][sS]|[yY])
+			echo "y"
+			return 1
+			;;
+		*)
+			echo "n"
+			return 0
+			;;
+	esac
+}
+
+clean_aws(){
  rm ~/.aws/credentials
     print_green "----------AWS creds removed----------"
 }
 
-cleanChrome(){
+clean_chrome(){
      # Double check its okay to remove contents of downloads
-     read -p "Remove chrome logins, history and cookies (Y/N)" response2
-    if [[ $response2 =~ ^[Yy]$ ]]; then
+    if confirm "Remove chrome logins, history and cookies"; then
         rm -rf ~/.cache/google-chrome/*
         rm -f ~/.config/google-chrome/Default/*
         print_green "----------Chrome data Cleared----------"
@@ -32,10 +46,10 @@ cleanChrome(){
     fi
 }
 
-cleanDownloads(){
+clean_downloads(){
      # Double check its okay to remove contents of downloads
-    read -p "Remove contents of downloads folder (Y/N)" response3
-    if [[ $response3 =~ ^[Yy]$ ]]; then
+    
+    if confirm "Remove contents of downloads folder (Y/N)" ; then
         rm -r ~/Downloads/*
         print_green "----------Downloads Cleared----------"
     else 
@@ -43,23 +57,22 @@ cleanDownloads(){
     fi
 }
 
-cleanHistory(){
+clean_history(){
     history -c
     history -w
     print_green "----------Bash History Cleared----------"
 
 }
 
-cleanGit(){
+clean_git(){
     sudo apt clean
     sudo apt autoremove
     print_green "----------Cleaning Complete----------"
 }
 
-cleanSSH(){
+clean_ssh(){
     # Double check its okay to remove all ssh keys
-    read -p "Remove all ssh keys from ~/.ssh (Y/N)" response4
-    if [[ $response4 =~ ^[Yy]$ ]]; then
+    if confirm "Remove all ssh keys from ~/.ssh (Y/N) "; then
         rm -r ~/.ssh/*
         print_green "----------SSH Keys Cleared----------"
     else 
@@ -67,25 +80,20 @@ cleanSSH(){
     fi
 }
 
-# Prompt the user
-read -p "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. 
-are you sure you would like to continue" response 
-# Check the response
-if [[ $response =~ ^[Yy]$ ]]; then
+
+# Prompt for script to run
+if confirm "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. 
+are you sure you would like to continue (Y/N) " ; then
     # Run the clean up for AWS and github Creds
    
-    cleanAWS
-    cleanGit
-    cleanChrome
-    cleanDownloads
-    cleanHistory
-    cleanSSH
-
+    clean_aws
+    clean_git
+    clean_chrome
+    clean_downloads
+    clean_history
+    clean_ssh
+    print_green "----------Cleaning Compelte----------"
 
     # Kill the script if no is selected
-elif [[ $response =~ ^[Nn]$ ]]; then
-    print_red "----------Program Terminated----------"
-    exit 1
-else
-    print_red "----------Invalid response. Please enter Y or N.---------"
+else    print_red "----------Program Terminated----------" exit 1
 fi
