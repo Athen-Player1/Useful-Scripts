@@ -21,6 +21,13 @@ print_yellow() {
     echo -e "${YELLOW}$1${RESET}"
 }
 
+# check whether user had supplied -h or --help
+if [[ ( $@ == "--help") ||  $@ == "-h" ]]
+then 
+	echo "A simple program to clean a Server PC before delivery. Please run with SUDO to ensure sanitisation"
+	exit 0
+fi 
+
 confirm() {
 	# call with a prompt string or use a default
 	read -r -p "${1:-[y/N]} " response
