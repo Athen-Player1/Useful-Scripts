@@ -138,10 +138,10 @@ are you sure you would like to continue (Y/N) " ; then
     clean_git
     print_yellow "Step 6/7"
     clean_ssh
-    print_yellow "Step 7/7
+    print_yellow "Step 7/7"
     print_yellow "----------Cleaning Complete----------"
 
-    # Kill the script if no is selected"
+    # Kill the script if no is selected
 else    
     print_red "----------Program Terminated----------" exit 1
 fi
