@@ -142,5 +142,6 @@ are you sure you would like to continue (Y/N) " ; then
     print_yellow "----------Cleaning Complete----------"
 
     # Kill the script if no is selected
-else    print_red "----------Program Terminated----------" exit 1
+else    
+    print_red "----------Program Terminated----------" exit 1
 fi
