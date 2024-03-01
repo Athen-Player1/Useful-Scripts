@@ -53,4 +53,3 @@ elif [[ $response =~ ^[Nn]$ ]]; then
 else
     print_red "----------Invalid response. Please enter Y or N.---------"
 fi
-
