@@ -28,7 +28,7 @@ if [[ $response =~ ^[Yy]$ ]]; then
     print_green "----------GitHub creds removed----------"
 
     # Double check its okay to remove chrome data
-    read -p "Remove chrome logins, history and cookies?" response2
+    read -p "Remove chrome logins, history and cookies (Y/N)" response2
     if [[ $response2 =~ ^[Yy]$ ]]; then
         rm -rf ~/.cache/google-chrome/*
         rm -f ~/.config/google-chrome/Default/*
@@ -37,6 +37,15 @@ if [[ $response =~ ^[Yy]$ ]]; then
          print_red "----------Chrome Skipped----------"
     fi
 
+    # Double check its okay to remove contents of downloads
+    read -p "Remove contents of downloads folder (Y/N)" response3
+    if [[ $response3 =~ ^[Yy]$ ]]; then
+        rm -r ~/Downloads/*
+        print_green "----------Downloads Cleared----------"
+    else 
+         print_red "----------Downloads Skipped----------"
+    fi
+    
     print_green "----------Clearing Bash History----------"
     history -c
     history -w
