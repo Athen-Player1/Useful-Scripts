@@ -48,6 +48,7 @@ clean_aws(){
     # Double check its okay to remove AWS creds
     if confirm "Remove AWS Creds (Y/N) "; then
         rm ~/.aws/credentials
+        rm /home/client/.docker/config.json
         print_green "----------AWS creds removed----------"
        else 
          print_red "----------AWS Skipped----------"
@@ -110,6 +111,7 @@ clean_ssh(){
 }
 
 clean_cache(){
+    
     if confirm "Would you like to remove the system cache? /tmp /var/tmp /var/lib/apt/lists/ ~/.cache (Y/N) "; then
         sudo apt clean
         sudo apt autoremove
