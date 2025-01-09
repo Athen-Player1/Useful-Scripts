@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Set the script to run in auto mode
+AUTO_RUN=false
+
 # Define color escape codes
 GREEN='\e[0;32m'
 RED='\e[0;31m'
@@ -24,8 +27,19 @@ print_yellow() {
 
 # Check whether user had supplied -h or --help
 if [[ ($@ == "--help") || $@ == "-h" ]]; then
-    echo "Please run with SUDO to ensure sanitisation"
+    echo "Usage: $0 [OPTION]"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help          Show this help message and exit"
+    echo "  -a, --auto          Run the script in automatic mode without prompts"
+    echo ""
+    echo "Warning: Running in automatic mode will execute all cleaning operations without confirmation prompts. This may delete important directories and files!"
     exit 0
+fi
+
+# Check whether user had supplied -a or --auto
+if [[ ($@ == "--auto") || $@ == "-a" ]]; then
+    AUTO_RUN=true
 fi
 
 confirm() {
@@ -44,8 +58,9 @@ confirm() {
 }
 
 clean_aws() {
+    print_yellow "Step 1/8"
     # Double check its okay to remove AWS creds
-    if confirm "Remove AWS Creds (Y/N) "; then
+    if $AUTO_RUN || confirm "Remove AWS Creds (Y/N) "; then
         if [ -f "$HOME/.aws/credentials" ]; then
             rm "$HOME/.aws/credentials"
             print_green "----------AWS creds removed----------"
@@ -58,8 +73,9 @@ clean_aws() {
 }
 
 clean_chrome() {
+    print_yellow "Step 2/8"
     # Double check its okay to remove contents of chrome
-    if confirm "Remove chrome logins, history and cookies, this will kill the chrome process (Y/N) "; then
+    if $AUTO_RUN || confirm "Remove chrome logins, history and cookies, this will kill the chrome process (Y/N) "; then
         if [ -d "$HOME/.cache/google-chrome/" ]; then
             rm -rf "$HOME/.cache/google-chrome/*"
         else
@@ -76,9 +92,30 @@ clean_chrome() {
     fi
 }
 
+clean_firefox() {
+    print_yellow "Step 3/8"
+    # Double check its okay to remove contents of chrome
+    if $AUTO_RUN || confirm "Remove chrome logins, history and cookies, this will kill the chrome process (Y/N) "; then
+        if [ -d "$HOME/.mozilla/firefox" ]; then
+            rm -rf "$HOME/.mozilla/firefox/*"
+        else
+            print_yellow "----------Firefox Cache not found skipping----------"
+        fi
+        if [ -d "$HOME/.mozilla/firefox" ]; then
+            rm -rf "$HOME/.mozilla/firefox"
+        else
+            print_yellow "----------Firefox Config not found skipping----------"
+        fi
+        print_green "----------Firefox data Cleared----------"
+    else
+        print_red "----------Firefox Skipped----------"
+    fi
+}
+
 clean_downloads() {
+    print_yellow "Step 4/8"
     # Double check its okay to remove contents of downloads
-    if confirm "Remove contents of downloads folder (Y/N) "; then
+    if $AUTO_RUN || confirm "Remove contents of downloads folder (Y/N) "; then
         if [ -d "$HOME/.ssh/" ]; then
             rm -rf "$HOME/Downloads/*"
         else
@@ -91,8 +128,9 @@ clean_downloads() {
 }
 
 clean_history() {
+    print_yellow "Step 5/8"
     # Double check its okay to remove bash history
-    if confirm "Clear Bash History (Y/N) "; then
+    if $AUTO_RUN || confirm "Clear Bash History (Y/N) "; then
         history -c
         history -w
         print_green "----------Bash History Cleared----------"
@@ -101,29 +139,27 @@ clean_history() {
     fi
 }
 
-clean_git() {
-    # Double check its okay to remove all git creds
-    if confirm "Clear GitHub creds (Y/N) "; then
-        if command -v git &>/dev/null; then
-            git config --global --unset credential.helper
-            git credential-cache exit
-        else
-            print_yellow "----------Git not found skipping----------"
-        fi  
-        if [ -f "$HOME/.git-credentials" ]; then
-            rm $HOME/.git-credentials
-        else
-            print_yellow "----------Git Creds not found skipping----------"
+clean_git(){
+    print_yellow "Step 6/8"
+    if $AUTO_RUN || confirm "Clear GitHub creds (Y/N) "; then
+        
+        # Remove GitHub credentials from the credential store
+        git credential-cache exit
+        git credential-cache --timeout=1 exit
+        
+        # Remove any stored GitHub credentials from the .git-credentials file
+        if [ -f ~/.git-credentials ]; then
+            rm ~/.git-credentials
+            echo "Removed ~/.git-credentials"
         fi
-        print_green "----------Git creds cleared----------"
-    else
-        print_red "----------Git Creds Skipped----------"
+        echo "----------GitHub Creds Cleared---------"
     fi
 }
 
 clean_ssh() {
+    print_yellow "Step 7/8"
     # Double check its okay to remove all ssh keys
-    if confirm "Remove all ssh keys from $HOME/.ssh (Y/N) "; then
+    if $AUTO_RUN || confirm"Remove all ssh keys from $HOME/.ssh (Y/N) "; then
         if [ -d "$HOME/Downloads/" ]; then
             rm -rf "$HOME/.ssh/"
         else
@@ -136,8 +172,8 @@ clean_ssh() {
 }
 
 clean_cache() {
-
-    if confirm "Would you like to remove the system cache? /tmp /var/tmp /var/lib/apt/lists/ $HOME/.cache (Y/N) "; then
+    print_yellow "Step 8/8"
+    if $AUTO_RUN || confirm "Would you like to remove the system cache? /tmp /var/tmp /var/lib/apt/lists/ $HOME/.cache (Y/N) "; then
         sudo apt clean
         sudo rm -rf /tmp/*
         sudo rm -rf /var/tmp/*
@@ -147,28 +183,22 @@ clean_cache() {
     else
         print_red "-----------Cache Skipped----------"
     fi
-
 }
 
 # Prompt for script to run
-print_yellow "----------Delievery NUC Cleaner----------"
-if confirm "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. 
+print_green "----------Delivery Cleaner----------"
+if $AUTO_RUN || confirm "This script will clean the machine. It will remove the AWS CLI and creds, the bash history, any logged-in GitHub accounts, and perform apt autoremove. 
 are you sure you would like to continue (Y/N) "; then
-    # Run the clean up the process print the current step
-    print_yellow "Step 1/7"
+    # Run the clean up the process step by step
     clean_aws
-    print_yellow "Step 2/7"
     clean_chrome
-    print_yellow "Step 3/7"
+    clean_firefox
     clean_downloads
-    print_yellow "Step 4/7"
     clean_history
-    print_yellow "Step 5/7"
     clean_git
-    print_yellow "Step 6/7"
     clean_ssh
-    print_yellow "Step 7/7"
-    print_yellow "----------Cleaning Complete----------"
+    clean_cache
+    print_green "----------Cleaning Complete----------"
 
     # Kill the script if no is selected
 else
