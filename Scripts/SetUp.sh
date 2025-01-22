@@ -52,30 +52,40 @@ install_tools() {
     fi
 }
 
-#Learning a lesson the hard way and other aliases
 set_up_alias(){
+#File management aliases
+echo "#File management aliases" >> ~/.bashrc
 echo "alias rm='rm -i --preserve-root'" >> ~/.bashrc
-echo "alias untar=tar -xvf'" >> ~/.bashrc
+echo "alias untar='tar -xvf'" >> ~/.bashrc
+echo "alias rsyncquick='rsync -ravzh --progress'" >> ~/.bashrc
+echo "alias bigfiles='find . -type f -exec du -h {} + | sort -rh | head -n 10'" >> ~/.bashrc
+#Network aliases
+echo "#Network aliases" >> ~/.bashrc
 echo "alias ports='netstat -tuln'" >> ~/.bashrc
 echo "alias myip='curl ifconfig.me'" >> ~/.bashrc
-echo "alias rsyncquick='rsync -avz --progress'" >> ~/.bashrc
-echo "alias rsyncincremental='rsync -avh --progress'" >> ~/.bashrc
+echo "alias speedtest='curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -'" >> ~/.bashrc
+#System aliases
+echo "#System aliases" >> ~/.bashrc
 echo "alias logs='tail -f /var/log/syslog'" >> ~/.bashrc
 echo "alias please='sudo !!'" >> ~/.bashrc
-echo "alias c = 'clear'" >> ~/.bashrc
-echo "alias speedtest = 'curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -'" >> ~/.bashrc
-echo "alias bigfiles = 'find . -type f -exec du -h {} + | sort -rh | head -n 10'" >> ~/.bashrc
+echo "alias c='clear'" >> ~/.bashrc
+#Docker aliases
+echo "#Docker aliases" >> ~/.bashrc
+echo "alias dockerpsa='sudo docker ps -a'" >> ~/.bashrc
 
+
+#reload bashrc
+source ~/.bashrc
 }
 
 #Set up nano
 setup_nano(){
     print_yellow "Downloading nano syntax highlighting"
-    wget -q https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh -O- | sh >dev/null 2>&1
+    wget -q https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh -O- | sh > /ndev/null 2>&1
     touch ~/.nanorc
-    print_yellow "set linenumbers" >> ~/.nanorc
-    print_yellow "set autoindent" >> ~/.nanorc
-    print_yellow "set backup" >> ~/.nanorc
+    echo "set linenumbers" >> ~/.nanorc
+    echo "set autoindent" >> ~/.nanorc
+    echo "set backup" >> ~/.nanorc
     print_green "Nano setup complete"
 }
 
