@@ -24,8 +24,8 @@ print_yellow() {
 #install common tools and utilities
 install_tools() {
 
-    print_yellow "Installing common tools and utilities. Please provide sudo password:"
-    read -sp 'sudo pass: ' usersudo
+    print_yellow "Installing common tools and utilities."
+    read -sp 'Please provide sudo password: ' usersudo
     echo
     if [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -53,6 +53,9 @@ install_tools() {
 }
 
 set_up_alias(){
+print_yellow "Setting up aliases"
+#Backup bashrc
+cp ~/.bashrc ~/.bashrc.bak
 #File management aliases
 echo "#File management aliases" >> ~/.bashrc
 echo "alias rm='rm -i --preserve-root'" >> ~/.bashrc
@@ -72,16 +75,20 @@ echo "alias c='clear'" >> ~/.bashrc
 #Docker aliases
 echo "#Docker aliases" >> ~/.bashrc
 echo "alias dockerpsa='sudo docker ps -a'" >> ~/.bashrc
+#Backup aliases
+echo "#Backup aliases" >> ~/.bashrc
+echo "alias backuphome='tar -czvf /tmp/homebackup.tar.gz /home/$USER'" >> ~/.bashrc
 
 
 #reload bashrc
 source ~/.bashrc
+print_green "Aliases set up successfully"
 }
 
 #Set up nano
 setup_nano(){
     print_yellow "Downloading nano syntax highlighting"
-    wget -q https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh -O- | sh > /ndev/null 2>&1
+    wget -q https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh -O- | sh > /dev/null 2>&1
     touch ~/.nanorc
     echo "set linenumbers" >> ~/.nanorc
     echo "set autoindent" >> ~/.nanorc
