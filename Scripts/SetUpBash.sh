@@ -78,8 +78,6 @@ echo "alias dockerpsa='sudo docker ps -a'" >> ~/.bashrc
 #Backup aliases
 echo "#Backup aliases" >> ~/.bashrc
 echo "alias backuphome='tar -czvf /tmp/homebackup.tar.gz /home/$USER'" >> ~/.bashrc
-
-
 #reload bashrc
 source ~/.bashrc
 print_green "Aliases set up successfully"
