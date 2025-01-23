@@ -53,37 +53,52 @@ install_tools() {
 }
 
 set_up_alias(){
-print_yellow "Setting up aliases"
-#Backup bashrc
-cp ~/.bashrc ~/.bashrc.bak
-#File management aliases
-echo "#File management aliases" >> ~/.bashrc
-echo "alias rm='rm -i --preserve-root'" >> ~/.bashrc
-echo "alias untar='tar -xvf'" >> ~/.bashrc
-echo "alias rsyncquick='rsync -ravzh --progress'" >> ~/.bashrc
-echo "alias bigfiles='find . -type f -exec du -h {} + | sort -rh | head -n 10'" >> ~/.bashrc
-#Network aliases
-echo "#Network aliases" >> ~/.bashrc
-echo "alias ports='netstat -tuln'" >> ~/.bashrc
-echo "alias myip='curl ifconfig.me'" >> ~/.bashrc
-echo "alias speedtest='curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -'" >> ~/.bashrc
-#System aliases
-echo "#System aliases" >> ~/.bashrc
-echo "alias logs='tail -f /var/log/syslog'" >> ~/.bashrc
-echo "alias please='sudo !!'" >> ~/.bashrc
-echo "alias c='clear'" >> ~/.bashrc
-#Docker aliases
-echo "#Docker aliases" >> ~/.bashrc
-echo "alias dockerpsa='sudo docker ps -a'" >> ~/.bashrc
-#Backup aliases
-echo "#Backup aliases" >> ~/.bashrc
-echo "alias backuphome='tar -czvf /tmp/homebackup.tar.gz /home/$USER'" >> ~/.bashrc
-#reload bashrc
-source ~/.bashrc
-print_green "Aliases set up successfully"
+    print_yellow "Setting up aliases"
+    # Backup bashrc
+    cp ~/.bashrc ~/.bashrc.bak
+
+    # Function to add alias if it doesn't already exist
+    add_alias() {
+        local alias_name="$1"
+        local alias_command="$2"
+        if ! grep -q "alias $alias_name=" ~/.bashrc; then
+            echo "alias $alias_name='$alias_command'" >> ~/.bashrc
+        fi
+    }
+
+    # File management aliases
+    echo "# File management aliases" >> ~/.bashrc
+    add_alias "rm" "rm -i --preserve-root"
+    add_alias "untar" "tar -xvf"
+    add_alias "rsyncquick" "rsync -ravzh --progress"
+    add_alias "bigfiles" "find . -type f -exec du -h {} + | sort -rh | head -n 10"
+
+    # Network aliases
+    echo "# Network aliases" >> ~/.bashrc
+    add_alias "ports" "netstat -tuln"
+    add_alias "myip" "curl ifconfig.me"
+    add_alias "speedtest" "curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -"
+
+    # System aliases
+    echo "# System aliases" >> ~/.bashrc
+    add_alias "logs" "tail -f /var/log/syslog"
+    add_alias "please" "sudo !!"
+    add_alias "c" "clear"
+
+    # Docker aliases
+    echo "# Docker aliases" >> ~/.bashrc
+    add_alias "dockerpsa" "sudo docker ps -a"
+
+    # Backup aliases
+    echo "# Backup aliases" >> ~/.bashrc
+    add_alias "backuphome" "tar -czvf /tmp/homebackup.tar.gz /home/$USER"
+
+    # Reload bashrc
+    source ~/.bashrc
+    print_green "Aliases set up successfully"
 }
 
-#Set up nano
+# Set up nano
 setup_nano(){
     print_yellow "Downloading nano syntax highlighting"
     wget -q https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh -O- | sh > /dev/null 2>&1
