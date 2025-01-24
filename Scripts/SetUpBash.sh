@@ -93,6 +93,37 @@ set_up_alias(){
     echo "# Backup aliases" >> ~/.bashrc
     add_alias "backuphome" "tar -czvf /tmp/homebackup.tar.gz /home/$USER"
 
+    # Tmux cheatsheet function
+    echo "# Tmux cheatsheet function" >> ~/.bashrc
+    echo "print_tmux_cheatsheet() {" >> ~/.bashrc
+    echo "    echo '=============================='" >> ~/.bashrc
+    echo "    echo '        Tmux Cheatsheet       '" >> ~/.bashrc
+    echo "    echo '=============================='" >> ~/.bashrc
+    echo "    echo 'Pane Management:'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, %  - Split pane vertically'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, \" - Split pane horizontally'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, x  - Close current pane'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, arrow key - Switch pane'" >> ~/.bashrc
+    echo "    echo ''" >> ~/.bashrc
+    echo "    echo 'Window Management:'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, c  - Create new window'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, n  - Next window'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, p  - Previous window'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, w  - List windows'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, ,  - Rename current window'" >> ~/.bashrc
+    echo "    echo ''" >> ~/.bashrc
+    echo "    echo 'Session Management:'" >> ~/.bashrc
+    echo "    echo 'Ctrl + b, d  - Detach from session'" >> ~/.bashrc
+    echo "    echo 'tmux ls      - List sessions'" >> ~/.bashrc
+    echo "    echo 'tmux attach  - Attach to a session'" >> ~/.bashrc
+    echo "    echo 'tmux new -s <name> - Create a new session with name'" >> ~/.bashrc
+    echo "    echo 'tmux kill-session -t <name> - Kill session with name'" >> ~/.bashrc
+    echo "    echo '=============================='" >> ~/.bashrc
+    echo "}" >> ~/.bashrc
+
+    # Add alias for tmux cheatsheet
+    add_alias "tmuxhelp" "print_tmux_cheatsheet"
+
     # Reload bashrc
     source ~/.bashrc
     print_green "Aliases set up successfully"
